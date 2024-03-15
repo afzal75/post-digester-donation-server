@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
@@ -104,6 +104,36 @@ async function run() {
         message: "All Supply retrieved successfully",
         result,
       });
+    });
+
+    app.get("/api/v1/supplies/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        console.log(id);
+
+        const result = await supplyCollection.findOne({
+          _id: new ObjectId(id), // Corrected ObjectID usage
+        });
+
+        if (!result) {
+          return res.status(404).json({
+            success: false,
+            message: "Supply not found",
+          });
+        }
+
+        res.status(200).json({
+          success: true,
+          message: "Supply fetched successfully",
+          result,
+        });
+      } catch (error) {
+        console.error("Error fetching supply:", error);
+        res.status(500).json({
+          success: false,
+          message: "Internal server error",
+        });
+      }
     });
 
     // ==============================================================
