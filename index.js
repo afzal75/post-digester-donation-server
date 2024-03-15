@@ -97,12 +97,11 @@ async function run() {
     });
 
     app.get("/api/v1/supplies", async (req, res) => {
-      // find into the database
       const result = await supplyCollection.find().toArray();
 
       res.status(201).json({
         success: true,
-        message: "Supply Post fetched successfully",
+        message: "All Supply retrieved successfully",
         result,
       });
     });
