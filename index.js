@@ -46,7 +46,7 @@ async function run() {
       const hashedPassword = await bcrypt.hash(password, 10);
 
       // Insert user into the database
-      await collection.insertOne({ name, email, password: hashedPassword });
+      await userCollection.insertOne({ name, email, password: hashedPassword });
 
       res.status(201).json({
         success: true,
@@ -59,7 +59,7 @@ async function run() {
       const { email, password } = req.body;
 
       // Find user by email
-      const user = await collection.findOne({ email });
+      const user = await userCollection.findOne({ email });
       if (!user) {
         return res.status(401).json({ message: "Invalid email or password" });
       }
@@ -133,6 +133,37 @@ async function run() {
           success: false,
           message: "Internal server error",
         });
+      }
+    });
+
+    app.patch("/api/v1/supplies/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const dataToUpdate = req.body;
+        const updateObject = {};
+
+        for (const key in dataToUpdate) {
+          if (dataToUpdate[key] !== undefined) {
+            updateObject[key] = dataToUpdate[key];
+          }
+        }
+
+        const result = await supplyCollection.findOneAndUpdate(
+          { _id: new ObjectId(id) },
+          { $set: updateObject },
+          { returnOriginal: false, new: true }
+        );
+
+        res.status(201).json({
+          success: true,
+          message: "Supply updated successfully",
+          result,
+        });
+      } catch (error) {
+        console.error("Error updating supply:", error);
+        res
+          .status(500)
+          .json({ success: false, message: "Failed to update supply" });
       }
     });
 
