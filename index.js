@@ -167,6 +167,21 @@ async function run() {
       }
     });
 
+    app.delete("/api/v1/supplies/:id", async (req, res) => {
+      // find into the database
+      const id = req.params.id;
+
+      const result = await supplyCollection.findOneAndDelete({
+        _id: new ObjectId(id),
+      });
+
+      res.status(201).json({
+        success: true,
+        message: "Supply deleted successfully",
+        result,
+      });
+    });
+
     // ==============================================================
 
     // Start the server
