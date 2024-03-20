@@ -27,7 +27,7 @@ async function run() {
 
     const db = client.db("relife-donation");
     const userCollection = db.collection("users");
-    const supplyCollection = db.collection("supplies");
+    const donationCollection = db.collection("donations");
 
     // User Registration
     app.post("/api/v1/register", async (req, res) => {
@@ -85,46 +85,46 @@ async function run() {
     // ==============================================================
     // WRITE YOUR CODE HERE
 
-    app.post("/api/v1/supplies", async (req, res) => {
+    app.post("/api/v1/donations", async (req, res) => {
       const supply = req.body;
-      const result = await supplyCollection.insertOne(supply);
+      const result = await donationCollection.insertOne(supply);
 
       res.status(201).json({
         success: true,
-        message: "Supply created successfully",
+        message: "Donation created successfully",
         result,
       });
     });
 
-    app.get("/api/v1/supplies", async (req, res) => {
-      const result = await supplyCollection.find().toArray();
+    app.get("/api/v1/donations", async (req, res) => {
+      const result = await donationCollection.find().toArray();
 
       res.status(201).json({
         success: true,
-        message: "All Supply retrieved successfully",
+        message: "All Donation retrieved successfully",
         result,
       });
     });
 
-    app.get("/api/v1/supplies/:id", async (req, res) => {
+    app.get("/api/v1/donations/:id", async (req, res) => {
       try {
         const id = req.params.id;
         console.log(id);
 
-        const result = await supplyCollection.findOne({
+        const result = await donationCollection.findOne({
           _id: new ObjectId(id), // Corrected ObjectID usage
         });
 
         if (!result) {
           return res.status(404).json({
             success: false,
-            message: "Supply not found",
+            message: "Donation not found",
           });
         }
 
         res.status(200).json({
           success: true,
-          message: "Supply fetched successfully",
+          message: "Donation fetched successfully",
           result,
         });
       } catch (error) {
@@ -136,7 +136,7 @@ async function run() {
       }
     });
 
-    app.patch("/api/v1/supplies/:id", async (req, res) => {
+    app.patch("/api/v1/donations/:id", async (req, res) => {
       try {
         const id = req.params.id;
         const dataToUpdate = req.body;
@@ -148,7 +148,7 @@ async function run() {
           }
         }
 
-        const result = await supplyCollection.findOneAndUpdate(
+        const result = await donationCollection.findOneAndUpdate(
           { _id: new ObjectId(id) },
           { $set: updateObject },
           { returnOriginal: false, new: true }
@@ -156,7 +156,7 @@ async function run() {
 
         res.status(201).json({
           success: true,
-          message: "Supply updated successfully",
+          message: "Donation updated successfully",
           result,
         });
       } catch (error) {
@@ -167,17 +167,17 @@ async function run() {
       }
     });
 
-    app.delete("/api/v1/supplies/:id", async (req, res) => {
+    app.delete("/api/v1/donations/:id", async (req, res) => {
       // find into the database
       const id = req.params.id;
 
-      const result = await supplyCollection.findOneAndDelete({
+      const result = await donationCollection.findOneAndDelete({
         _id: new ObjectId(id),
       });
 
       res.status(201).json({
         success: true,
-        message: "Supply deleted successfully",
+        message: "Donation deleted successfully",
         result,
       });
     });
@@ -201,7 +201,7 @@ async function run() {
           },
         ];
 
-        const result = await supplyCollection.aggregate(pipeline).toArray();
+        const result = await donationCollection.aggregate(pipeline).toArray();
         const statisticsInfo = {
           totalDonationSum: result[0]?.totalDonationSum,
           statistics: result[0]?.statistics,
