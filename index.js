@@ -182,6 +182,36 @@ async function run() {
       });
     });
 
+    app.get("/api/v1/statistics", async (req, res) => {
+      try {
+        const pipeline = [
+          {
+            $group: {
+              _id: "$category",
+              totalDonation: { $sum: "$amount" },
+              totalItem: { $sum: 1 },
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              totalDonationSum: { $sum: "$totalDonation" },
+              statistics: { $push: "$$ROOT" },
+            },
+          },
+        ];
+
+        const result = await supplyCollection.aggregate(pipeline).toArray();
+        const statisticsInfo = {
+          totalDonationSum: result[0]?.totalDonationSum,
+          statistics: result[0]?.statistics,
+        };
+        res.json(statisticsInfo);
+      } catch (error) {
+        console.log(error);
+      }
+    });
+
     // ==============================================================
 
     // Start the server
