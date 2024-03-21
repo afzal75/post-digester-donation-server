@@ -13,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB Connection URL
-const uri = process.env.MONGODB_URI;
+const uri = process.env.MONGODB_URL;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -25,10 +25,10 @@ async function run() {
     await client.connect();
     console.log("Connected to MongoDB");
 
-    const db = client.db("relife-donation");
+    const db = client.db("post-digester-donation");
     const userCollection = db.collection("users");
     const donationCollection = db.collection("donations");
-
+    const donarCollection = db.collection("donars");
     // User Registration
     app.post("/api/v1/register", async (req, res) => {
       const { name, email, password } = req.body;
@@ -209,6 +209,42 @@ async function run() {
         res.json(statisticsInfo);
       } catch (error) {
         console.log(error);
+      }
+    });
+
+    //* Donor Data
+    app.post("/api/v1/donor", async (req, res) => {
+      const { email, name, image, amount } = req.body;
+
+      const existingUser = await donorCollection.findOne({ email });
+
+      if (!existingUser) {
+        const result = await donorCollection.insertOne({
+          email,
+          name,
+          image,
+          amount,
+        });
+
+        return res.json({
+          success: true,
+          message: "You provided Donation successfully!",
+          result,
+        });
+      } else {
+        const previousAmount = existingUser.amount;
+        const updatedAmount = previousAmount + amount;
+
+        const data = await donorCollection.updateOne(
+          { email: email },
+          { $set: { amount: updatedAmount } }
+        );
+
+        res.json({
+          success: true,
+          message: "You provided Donation successfully!",
+          updatedDonation: data,
+        });
       }
     });
 
