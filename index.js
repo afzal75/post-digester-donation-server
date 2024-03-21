@@ -290,6 +290,20 @@ async function run() {
       });
     });
 
+    //volunteer routes
+    app.post("/api/v1/volunteer", async (req, res) => {
+      const volunteer = req.body;
+
+      // Insert user into the database
+      const result = await volunteerCollection.insertOne(volunteer);
+
+      res.status(201).json({
+        success: true,
+        message: "volunteer added successfully",
+        result,
+      });
+    });
+
     // ==============================================================
 
     // Start the server
