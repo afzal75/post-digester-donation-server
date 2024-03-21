@@ -28,7 +28,7 @@ async function run() {
     const db = client.db("post-digester-donation");
     const userCollection = db.collection("users");
     const donationCollection = db.collection("donations");
-    const donarCollection = db.collection("donars");
+    const donorCollection = db.collection("donors");
     // User Registration
     app.post("/api/v1/register", async (req, res) => {
       const { name, email, password } = req.body;
@@ -246,6 +246,15 @@ async function run() {
           updatedDonation: data,
         });
       }
+    });
+
+    app.get("/api/v1/donor", async (req, res) => {
+      const data = await donorCollection.find({}).toArray();
+      res.json({
+        success: true,
+        message: "successfully retrieve donors!",
+        data,
+      });
     });
 
     // ==============================================================
