@@ -29,6 +29,7 @@ async function run() {
     const userCollection = db.collection("users");
     const donationCollection = db.collection("donations");
     const donorCollection = db.collection("donors");
+    const commentCollection = db.collection("comments");
     // User Registration
     app.post("/api/v1/register", async (req, res) => {
       const { name, email, password } = req.body;
@@ -254,6 +255,38 @@ async function run() {
         success: true,
         message: "successfully retrieve donors!",
         data,
+      });
+    });
+
+    app.post("/api/v1/comments", async (req, res) => {
+      const { comments, email } = req.body;
+      const userData = await userCollection.findOne({ email });
+      const currentDateTime = new Date().toLocaleString();
+      const newComments = {
+        email,
+        commenterName: userData.name,
+        comments,
+        commenterImage: userData?.image,
+        timestamp: currentDateTime,
+      };
+      // Insert comments into the database
+      const result = await commentCollection.insertOne(newComments);
+
+      res.status(201).json({
+        success: true,
+        message: "comments added successfully",
+        result,
+      });
+    });
+
+    app.get("/api/v1/comments", async (req, res) => {
+      // find into the database
+      const result = await commentCollection.find().toArray();
+
+      res.status(201).json({
+        success: true,
+        message: "Comments fetched successfully",
+        result,
       });
     });
 
