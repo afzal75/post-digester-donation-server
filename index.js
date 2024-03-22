@@ -30,6 +30,7 @@ async function run() {
     const donationCollection = db.collection("donations");
     const donorCollection = db.collection("donors");
     const commentCollection = db.collection("comments");
+    const testimonialCollection = db.collection("testimonials");
     const volunteerCollection = db.collection("volunteers");
     // User Registration
     app.post("/api/v1/register", async (req, res) => {
@@ -287,6 +288,21 @@ async function run() {
       res.status(201).json({
         success: true,
         message: "Comments fetched successfully",
+        result,
+      });
+    });
+
+    // * testimonial routes
+
+    app.post("/api/v1/testimonial", async (req, res) => {
+      const testimonial = req.body;
+
+      // Insert user into the database
+      const result = await testimonialCollection.insertOne(testimonial);
+
+      res.status(201).json({
+        success: true,
+        message: "testimonial added successfully",
         result,
       });
     });
