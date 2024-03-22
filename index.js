@@ -30,6 +30,7 @@ async function run() {
     const donationCollection = db.collection("donations");
     const donorCollection = db.collection("donors");
     const commentCollection = db.collection("comments");
+    const volunteerCollection = db.collection("volunteers");
     // User Registration
     app.post("/api/v1/register", async (req, res) => {
       const { name, email, password } = req.body;
@@ -300,6 +301,16 @@ async function run() {
       res.status(201).json({
         success: true,
         message: "volunteer added successfully",
+        result,
+      });
+    });
+
+    app.get("/api/v1/volunteer", async (req, res) => {
+      const result = await volunteerCollection.find().toArray();
+
+      res.status(201).json({
+        success: true,
+        message: "volunteer fetched successfully",
         result,
       });
     });
