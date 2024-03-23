@@ -307,7 +307,18 @@ async function run() {
       });
     });
 
-    //volunteer routes
+    app.get("/api/v1/testimonial", async (req, res) => {
+      // find into the database
+      const result = await testimonialCollection.find().toArray();
+
+      res.status(201).json({
+        success: true,
+        message: "testimonial fetched successfully",
+        result,
+      });
+    });
+
+    // * volunteer routes
     app.post("/api/v1/volunteer", async (req, res) => {
       const volunteer = req.body;
 
